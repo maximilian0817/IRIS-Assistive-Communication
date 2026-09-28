@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --primary-glow: rgba(0, 212, 255, 0.3);
+            --bg-navy: #0a192f;
+            --text: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-blur: blur(20px);
+            --accent-red: #ff4b4b;
+            --accent-gold: #ffb800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-navy);
+            background-image:
+                radial-gradient(circle, rgba(0, 213, 255, 0.2) 1.2px, transparent 1.2px);
+            background-size: 30px 30px;
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 3%;
+        }
+
+        .glass-effect {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        nav {
+            position: absolute;
+            top: 1.5rem;
+            left: 3%;
+            z-index: 10;
+            text-shadow: 0 0 15px var(--primary-glow);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .back-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .message-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+
+        .output-header {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .unified-display {
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+            max-height: 120px;
+            padding: 0.8rem 2rem;
+            position: relative;
+            overflow: hidden;
+
+            background-image:
+                repeating-radial-gradient(circle at center,
+                    transparent 0,
+                    transparent 40px,
+                    rgba(0, 212, 255, 0.03) 41px,
+                    rgba(0, 212, 255, 0.03) 42px);
+        }
+
+        #decoded-word {
+            font-size: 2.5rem;
+            font-weight: 800;
+            min-height: 3rem;
+            color: var(--text);
+            text-shadow: 0 0 30px var(--primary-glow);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        #morse-pattern {
+            font-size: 1.4rem;
+            color: var(--primary);
+            opacity: 0.5;
+            letter-spacing: 6px;
+            min-height: 2rem;
+            font-family: monospace;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .video-box {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-height: 0;
+        }
+
+        .video-wrapper,
+        .dictionary-panel {
+            @extend .glass-effect;
+        }
+
+        .video-wrapper {
+            flex-grow: 1;
+            background: #000;
+            overflow: hidden;
+            position: relative;
+            min-height: 0;
+        }
+
+        .video-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px) 0 0 / 100% 4px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 0.9rem 1rem;
+            border: none;
+            border-radius: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-start {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .btn-pause {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        .btn-reset {
+            background: var(--accent-red);
+            color: #fff;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .dictionary-panel {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .dict-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .dict-item {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.5rem 0.8rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .dict-item b {
+            font-size: 0.9rem;
+        }
+
+        .dict-item span {
+            color: var(--primary);
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        .label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .status-indicator {
+            font-size: 0.65rem;
+            color: var(--primary);
+            opacity: 0.6;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">IRIS<span>.</span></div>
+        <a href="/" class="back-link">← Back to Home</a>
+    </nav>
+
+    <div class="message-section">
+        <header class="output-header">Live Transmission Stream</header>
+        <div class="glass-effect unified-display">
+            <div id="decoded-word">—</div>
+            <div id="morse-pattern"></div>
+        </div>
+    </div>
+
+    <main class="main-grid">
+        <section class="video-box">
+            <div class="glass-effect video-wrapper">
+                <img src="{{ url_for('video_feed') }}" alt="Camera Stream">
+                <div class="video-overlay"></div>
+            </div>
+            <div class="controls">
+                <button onclick="startDetection()" id="startBtn" class="btn btn-start">▶ Start</button>
+                <button onclick="togglePause()" id="pauseBtn" class="btn btn-pause" disabled>⏸ Pause</button>
+                <button onclick="resetDecoder()" id="resetBtn" class="btn btn-reset" disabled>↻ Reset</button>
+            </div>
+        </section>
+
+        <aside class="glass-effect dictionary-panel">
+            <span class="label">Reference Dictionary</span>
+            <div class="dict-grid" id="dictionary-content">
+            </div>
+            <div class="status-indicator">
+                <div id="statusText">Ready</div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        // Morse code reference data
+        const morseData = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..'
+        };
+
+        // DOM Elements
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const decodedWordDisplay = document.getElementById('decoded-word');
+        const morsePatternDisplay = document.getElementById('morse-pattern');
+        const statusText = document.getElementById('statusText');
+        const dictContainer = document.getElementById('dictionary-content');
+
+        // State
+        let isDetectionActive = false;
+        let statusInterval = null;
+
+        // Populate dictionary
+        Object.entries(morseData).forEach(([char, code]) => {
+            const item = document.createElement('div');
+            item.className = 'dict-item';
+            item.innerHTML = `<b>${char}</b><span>${code}</span>`;
+            dictContainer.appendChild(item);
+        });
+
+        // Start detection
+        async function startDetection() {
+            try {
+                const response = await fetch('/start', { method: 'POST' });
+
+                if (response.ok) {
+                    isDetectionActive = true;
+                    startBtn.disabled = true;
+                    pauseBtn.disabled = false;
+                    resetBtn.disabled = false;
+                    statusText.textContent = 'Active ✓';
+
+                    console.log('✅ Detection started');
+                    startStatusUpdates();
+                }
+            } catch (error) {
+                console.error('Error starting detection:', error);
+            }
+        }
+
+        // Toggle pause
+        async function togglePause() {
+            try {
+                const response = await fetch('/toggle_pause', { method: 'POST' });
+                const data = await response.json();
+
+                if (response.ok) {
+                    pauseBtn.textContent = data.paused ? '▶ Resume' : '⏸ Pause';
+                    statusText.textContent = data.paused ? 'Paused ⏸' : 'Active ✓';
+                }
+            } catch (error) {
+                console.error('Error toggling pause:', error);
+            }
+        }
+
+        // Reset decoder
+        async function resetDecoder() {
+            try {
+                const response = await fetch('/reset', { method: 'POST' });
+
+                if (response.ok) {
+                    decodedWordDisplay.textContent = '—';
+                    morsePatternDisplay.textContent = '';
+                    startBtn.disabled = false;
+                    pauseBtn.disabled = true;
+                    resetBtn.disabled = true;
+                    pauseBtn.textContent = '⏸ Pause';
+                    statusText.textContent = 'Ready';
+
+                    isDetectionActive = false;
+
+                    if (statusInterval) clearInterval(statusInterval);
+
+                    console.log('🔄 Decoder reset');
+                }
+            } catch (error) {
+                console.error('Error resetting decoder:', error);
+            }
+        }
+
+        // Poll status from backend
+        function startStatusUpdates() {
+            statusInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/status');
+                    const data = await response.json();
+
+                    decodedWordDisplay.textContent = data.word || '—';
+                    morsePatternDisplay.textContent = data.morse || '';
+
+                } catch (error) {
+                    console.error('Error fetching status:', error);
+                }
+            }, 300);
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (statusInterval) clearInterval(statusInterval);
+        });
+
+        console.log('🚀 Iris Morse Code Detector loaded');
+    </script>
+</body>
+
+</html>
