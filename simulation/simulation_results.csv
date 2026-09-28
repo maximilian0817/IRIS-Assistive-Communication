@@ -1,0 +1,15 @@
+test,input,expected,actual,result
+end-to-end decode,SOS,SOS,SOS,PASS
+end-to-end decode,HELLO,HELLO,HELLO,PASS
+end-to-end decode,IRIS,IRIS,IRIS,PASS
+end-to-end decode,TEST,TEST,TEST,PASS
+blink boundary,0.10 s,dot,dot,PASS
+blink boundary,0.27 s,dot,dot,PASS
+blink boundary,0.28 s,dash,dash,PASS
+blink boundary,0.50 s,dash,dash,PASS
+blink boundary,1.99 s,dash,dash,PASS
+blink boundary,2.00 s,ignored,ignored,PASS
+blink boundary,2.20 s,ignored,ignored,PASS
+letter gap boundary,0.99 s after dot,no decode,no decode,PASS
+letter gap boundary,1.00 s after dot,E,E,PASS
+letter gap boundary,1.20 s after dot,E,E,PASS
